@@ -11,17 +11,17 @@ Using nginx and gunicorn.
 ## Usage
 **Deploying**
 
-`airflask deploy <path>`
+`sudo airflask deploy <path>`
 
 where path is full path to parent folder containing our app.py (BE sure to rename the main flask file as `app.py`)
 
-for eg. `airflask deploy /home/naitik/flaskecomapp/`
+for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
 **Stop or Restart**
 
-`airflask restart <path>` 
+`sudo airflask restart <path>` 
 
-`airflask stop <path>`
+`sudo airflask stop <path>`
 
 Restart whenever you make any changes
 
