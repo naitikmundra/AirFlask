@@ -19,6 +19,7 @@ where path is full path to parent folder containing our app.py (BE sure to renam
 for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
 
+
 **Stop or Restart**
 
 `sudo airflask restart <path>` 
