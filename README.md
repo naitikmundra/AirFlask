@@ -8,6 +8,7 @@ Using nginx and gunicorn.
 ## Installation
 `pip install airflask`
 
+
 ## Usage
 **Deploying**
 
@@ -16,6 +17,7 @@ Using nginx and gunicorn.
 where path is full path to parent folder containing our app.py (BE sure to rename the main flask file as `app.py`)
 
 for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
+
 
 **Stop or Restart**
 
