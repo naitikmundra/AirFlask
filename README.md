@@ -14,7 +14,9 @@ pip install airflask
 ## Usage
 **Deploying**: Just run this single line auto manages/installs all dependencies and your app will be live!
 
-`sudo airflask deploy <path>`
+```
+sudo airflask deploy <path>
+```
 
 where path is full path to parent folder containing our app.py (BE sure to rename the main flask file as `app.py`)
 
@@ -28,7 +30,9 @@ for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
 **Deploying with domain and ssl**: Also want to add your domain and get a free ssl cert?
 
-`sudo airflask deploy <path> --domain <example.com> --ssl`
+```
+sudo airflask deploy <path> --domain <example.com> --ssl
+```
 
 Note: `--ssl` will not work without a domain specified.
 
@@ -38,9 +42,8 @@ Note: `--ssl` will not work without a domain specified.
 
 **Stop or Restart**
 ```
-`sudo airflask restart <path>` 
-
-`sudo airflask stop <path>`
+sudo airflask restart <path>
+sudo airflask stop <path>
 ```
 Restart whenever you make any changes
 
