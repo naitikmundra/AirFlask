@@ -18,7 +18,9 @@ pip install airflask
 sudo airflask deploy <path>
 ```
 
-where path is full path to parent folder containing our app.py (BE sure to rename the main flask file as `app.py`)
+where path is full path to parent folder containing our app.py 
+
+BE sure to rename the main flask file as `app.py`
 
 for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
