@@ -37,17 +37,18 @@ for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 ```
 sudo airflask deploy <path> --domain <example.com> --ssl --noredirect
 ```
-Note: `--ssl` will not work without a domain specified.
 
-Note: by default if `--ssl` is specified all http requests will be redirected to https unless `--noredired` specified.
+## Note
 
-Note: Make sure your domain points to your ip address for ssl verifiation and functionality.
-
-
-
+- `--ssl` will not work without a domain specified.
+- by default if `--ssl` is specified all http requests will be redirected to https unless `--noredired` specified.
+- Make sure your domain points to your ip address for ssl verifiation and functionality.
 
 
-**Stop or Restart**
+
+
+
+## Stop or Restart
 ```
 sudo airflask restart <path>
 sudo airflask stop <path>
