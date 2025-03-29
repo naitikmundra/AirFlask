@@ -1,7 +1,5 @@
 # AirFlask
 
-![AirFlask (2)](https://github.com/user-attachments/assets/73f561cb-74aa-428e-be29-08694574dc2e)
-
 Simplest way to host flask web apps in production.
 Using nginx and gunicorn.
 
@@ -37,10 +35,11 @@ for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 ## Deploying with domain and ssl: Free ssl cert by Lets Encrypt
 
 ```
-sudo airflask deploy <path> --domain <example.com> --ssl
+sudo airflask deploy <path> --domain <example.com> --ssl --noredirect
 ```
-
 Note: `--ssl` will not work without a domain specified.
+
+Note: by default if `--ssl` is specified all http requests will be redirected to https unless `--noredired` specified.
 
 Note: Make sure your domain points to your ip address for ssl verifiation and functionality.
 
