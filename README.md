@@ -37,6 +37,7 @@ sudo airflask deploy <path> --domain <example.com> --ssl
 ```
 
 Note: `--ssl` will not work without a domain specified.
+
 Note: Make sure your domain points to your ip address for ssl verifiation and functionality.
 
 
