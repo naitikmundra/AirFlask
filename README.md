@@ -30,7 +30,7 @@ for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
 
 
-## Deploying with domain and ssl**: Also want to add your domain and get a free ssl cert?
+## Deploying with domain and ssl: Free ssl cert by Lets Encrypt
 
 ```
 sudo airflask deploy <path> --domain <example.com> --ssl
