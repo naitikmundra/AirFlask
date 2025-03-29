@@ -59,8 +59,9 @@ sudo airflask stop <path>
 ```
 Restart whenever you make any changes
 
-Feel free to email me at  naitikmundra18@gmail.com for any queries or suggestions.
-
+## Contact
+- Feel free to email me at  naitikmundra18@gmail.com for any queries or suggestions.
+- Or dm me on instagram: https://instagram.com/naitikmundra
 
 
 
