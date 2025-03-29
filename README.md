@@ -18,7 +18,11 @@ where path is full path to parent folder containing our app.py (BE sure to renam
 
 for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
+**Deploying with domain and ssl**: Also want to add your domain and get a free ssl cert?
 
+`sudo airflask deploy <path> --domain <example.com> --ssl`
+
+Note: `--ssl` will not work without a domain specified.
 
 **Stop or Restart**
 
