@@ -6,7 +6,7 @@ Simplest way to host flask web apps in production.
 Using nginx and gunicorn.
 
 ## Installation
-`pip install airflask`
+```pip install airflask```
 
 
 ## Usage
