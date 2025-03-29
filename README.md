@@ -10,7 +10,7 @@ Using nginx and gunicorn.
 
 
 ## Usage
-**Deploying**
+**Deploying**: Just run this single line auto manages/installs all dependencies and your app will be live!
 
 `sudo airflask deploy <path>`
 
