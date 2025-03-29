@@ -11,9 +11,9 @@ pip install airflask
 ```
 
 ## Features
-- One line production deployment for flask apps.
-- Installs all dependencies, and manages everything.
-- Power of a nginx + gunicorn server.
+- 🚀 One line production deployment for flask apps. 
+- 🔧 Installs all dependencies, and manages everything. 
+- ⚡ Power of a nginx + gunicorn server.
 
 ## Usage
 **Deploying**: Just run this single line auto manages/installs all dependencies and your app will be live!
