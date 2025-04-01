@@ -2,7 +2,11 @@ import os
 import subprocess
 import getpass  
 import re
+import multiprocessing
 
+def optimal_workers():
+    cores = multiprocessing.cpu_count()
+    return 2 * cores + 1
 def get_private_ip():
     try:
         return socket.gethostbyname(socket.gethostname())
@@ -62,7 +66,8 @@ def run_deploy(app_path, domain,ssl,noredirect):
         with open(wsgi_path, "w") as f:
             f.write(f"from app import app\n\nif __name__ == '__main__':\n    app.run()")
     username = getpass.getuser()
-
+    workers = str(optimal_workers())
+    print(f"Total workers: {workers}")
     service_config = f"""[Unit]
     Description=Gunicorn instance to serve {app_name}
     After=network.target
@@ -71,7 +76,7 @@ def run_deploy(app_path, domain,ssl,noredirect):
     User={username}
     Group=www-data
     WorkingDirectory={app_path}
-    ExecStart={venv_path}/bin/gunicorn --workers 3 --bind unix:{app_path}/{app_name}.sock wsgi:app
+    ExecStart={venv_path}/bin/gunicorn --workers {workers} --bind unix:{app_path}/{app_name}.sock wsgi:app
 
     [Install]
     WantedBy=multi-user.target
