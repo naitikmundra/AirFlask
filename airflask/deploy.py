@@ -22,20 +22,24 @@ def stop(app_path):
     log_file = os.path.join(app_path, "airflask.log")
     with open(log_file, 'r') as file:
         appname = file.read()
-    subprocess.run(["sudo", "systemctl", "stop", appname])
+    subprocess.run(["sudo", "systemctl", "stop", appname], stdout=subprocess.DEVNULL)
     
-    subprocess.run(["sudo", "systemctl", "stop", "nginx"])
+    subprocess.run(["sudo", "systemctl", "stop", "nginx"], stdout=subprocess.DEVNULL)
     
 def restart(app_path):
     log_file = os.path.join(app_path, "airflask.log")
     with open(log_file, 'r') as file:
         appname = file.read()
-    subprocess.run(["sudo", "systemctl", "restart", appname])
+    subprocess.run(["sudo", "systemctl", "restart", appname], stdout=subprocess.DEVNULL)
     
-    subprocess.run(["sudo", "systemctl", "restart", "nginx"])
+    subprocess.run(["sudo", "systemctl", "restart", "nginx"], stdout=subprocess.DEVNULL)
 
 def run_deploy(app_path, domain,ssl,noredirect):
-    
+    app_file = os.path.join(app_path, "app.py")
+
+    if os.path.isfile(app_file):
+        print("app.py does not exists at provided path, please rename your main flask file to app.py - Airflask")    
+        return 0
     if not domain: 
         ssl = None
         domain = "_"
@@ -50,16 +54,21 @@ def run_deploy(app_path, domain,ssl,noredirect):
     print(f"📦 Deploying {app_name}...")
 
     print("🔧 Installing dependencies...")
-    subprocess.run(["sudo", "apt", "update"])
-    subprocess.run(["sudo", "apt", "install", "-y", "python3-venv", "python3-pip", "nginx"])
+    subprocess.run(["sudo", "apt", "update"], stdout=subprocess.DEVNULL)
+    subprocess.run(["sudo", "apt", "install", "-y", "python3-venv", "python3-pip", "nginx"], stdout=subprocess.DEVNULL)
 
     venv_path = os.path.join(app_path, "venv")
     print("🐍 Creating virtual environment...")
-    subprocess.run(["python3", "-m", "venv", venv_path])
+    subprocess.run(["python3", "-m", "venv", venv_path], stdout=subprocess.DEVNULL)
     
-    print("📦 Installing Flask and Gunicorn...")
-    subprocess.run([f"{venv_path}/bin/pip", "install", "flask", "gunicorn"], cwd=app_path)
+    print("📦 Installing Flask, Gunicorn and other specified packages in requirements.txt...")
+    subprocess.run([f"{venv_path}/bin/pip", "install", "flask", "gunicorn"], stdout=subprocess.DEVNULL, cwd=app_path)
+    req_file = os.path.join(app_path, "requirements.txt")
 
+    if os.path.exists(req_file):    
+        subprocess.run([f"{venv_path}/bin/pip", "install", "-r", "requirements.txt"],stdout=subprocess.DEVNULL, cwd=app_path)
+    else:
+        print(f"Requirements.txt NOT FOUND at {app_path}, may cause dependency errors.")
     wsgi_path = os.path.join(app_path, "wsgi.py")
     if not os.path.exists(wsgi_path):
         print("📝 Creating wsgi.py...")
@@ -76,7 +85,7 @@ def run_deploy(app_path, domain,ssl,noredirect):
     User={username}
     Group=www-data
     WorkingDirectory={app_path}
-    ExecStart={venv_path}/bin/gunicorn --workers {workers} --bind unix:{app_path}/{app_name}.sock wsgi:app
+    ExecStart={venv_path}/bin/gunicorn --workers {workers}  -k gthread  --threads 8 --bind unix:{app_path}/{app_name}.sock wsgi:app
 
     [Install]
     WantedBy=multi-user.target
@@ -98,10 +107,10 @@ def run_deploy(app_path, domain,ssl,noredirect):
         file.write(app_name)
     with open("service_file.tmp", "w") as f:
         f.write(service_config)
-    subprocess.run(["sudo", "mv", "service_file.tmp", service_file])
-    subprocess.run(["sudo", "systemctl", "daemon-reload"])
-    subprocess.run(["sudo", "systemctl", "start", app_name])
-    subprocess.run(["sudo", "systemctl", "enable", app_name])
+    subprocess.run(["sudo", "mv", "service_file.tmp", service_file], stdout=subprocess.DEVNULL)
+    subprocess.run(["sudo", "systemctl", "daemon-reload"], stdout=subprocess.DEVNULL)
+    subprocess.run(["sudo", "systemctl", "start", app_name], stdout=subprocess.DEVNULL)
+    subprocess.run(["sudo", "systemctl", "enable", app_name], stdout=subprocess.DEVNULL)
 
     nginx_config = f"""server {{
     listen 80;
@@ -114,20 +123,22 @@ def run_deploy(app_path, domain,ssl,noredirect):
     }}"""
     with open("nginx_conf.tmp", "w") as f:
         f.write(nginx_config)
-    subprocess.run(["sudo", "mv", "nginx_conf.tmp", nginx_conf])
-    subprocess.run(["sudo", "ln", "-s", nginx_conf, nginx_link])
+    subprocess.run(["sudo", "mv", "nginx_conf.tmp", nginx_conf], stdout=subprocess.DEVNULL)
+    subprocess.run(["sudo", "ln", "-s", nginx_conf, nginx_link], stdout=subprocess.DEVNULL)
     if ssl:
         print("Getting an ssl certificate for you")
-        subprocess.run(["sudo", "apt", "install", "certbot", "python3-certbot-nginx"])
+        subprocess.run(["sudo", "apt", "install", "certbot", "python3-certbot-nginx"], stdout=subprocess.DEVNULL)
         if noredirect:
-            subprocess.run(["sudo", "certbot", "--nginx", "--no-redirect"])
+            subprocess.run(["sudo", "certbot", "--nginx", "--no-redirect"], stdout=subprocess.DEVNULL)
         else:
-            subprocess.run(["sudo", "certbot", "--nginx", "--redirect"])
-        subprocess.run(["sudo", "bash", "-c", 'echo "0 0,12 * * * certbot renew --quiet && systemctl reload nginx" | crontab -'])
+            subprocess.run(["sudo", "certbot", "--nginx", "--redirect"], stdout=subprocess.DEVNULL)
+        subprocess.run(["sudo", "bash", "-c", 'echo "0 0,12 * * * certbot renew --quiet && systemctl reload nginx" | crontab -'], stdout=subprocess.DEVNULL)
 
-    subprocess.run(["sudo", "systemctl", "restart", "nginx"])
+    subprocess.run(["sudo", "systemctl", "restart", "nginx"], stdout=subprocess.DEVNULL)
 
     ip_address = get_public_ip()
+    if domain  == "_":
+        domain = ip_address
     print(f"✅ Deployment completed! App with name '{app_name}' is live at: http://{domain}")
     if ssl:
         print(f"Also live at: https://{domain}")
