@@ -19,7 +19,7 @@ pip install airflask
 
 
 ## Usage
-**Deploying**: Just run this single line — it auto-installs all dependencies and your app goes live!
+**Deploying**: Just run this single line — it auto-installs all dependencies and your app goes live on http://<ip>!
 
 ```
 sudo airflask deploy <path>
