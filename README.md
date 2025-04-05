@@ -16,6 +16,8 @@ pip install airflask
 - 🔧 Installs all dependencies, and manages everything. 
 - ⚡ Powered by a nginx + gunicorn server.
 
+
+
 ## Usage
 **Deploying**: Just run this single line — it auto-installs all dependencies and your app goes live!
 
@@ -28,6 +30,8 @@ where <path> is the full path to the parent folder containing your app.py
 Be sure to rename the main flask file as `app.py`
 
 for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
+
+
 
 ## Deploying with Domain and SSL (Free SSL via Let's Encrypt)
 
