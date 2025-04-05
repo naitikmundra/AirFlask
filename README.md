@@ -24,8 +24,8 @@ pip install airflask
 ```
 sudo airflask deploy <path>
 ```
-- if domain is not specified app will be hosted on your public ip address use `--private` if you have a shared public ip address.
 - where `<path>` is the full path to the parent folder containing your app.py
+- App will be hosted on your public ip address use `--private` if you have a shared public ip address.
 - for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
 ## Deploying with Domain and SSL (Free SSL via Let's Encrypt)
