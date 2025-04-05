@@ -23,11 +23,12 @@ pip install airflask
 
 ```
 sudo airflask deploy <path>
+
+sudo airflask deploy /home/naitik/flaskecomapp/   #example
 ```
 
 where `<path>` is the full path to the parent folder containing your app.py
 
-for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
 ## Deploying with Domain and SSL (Free SSL via Let's Encrypt)
 
