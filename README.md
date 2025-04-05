@@ -19,16 +19,15 @@ pip install airflask
 
 
 ## Usage
-**Deploying**: Just run this single line — it auto-installs all dependencies and your app goes live!
+**Deploying**: 
 
 ```
 sudo airflask deploy <path>
-
-sudo airflask deploy /home/naitik/flaskecomapp/   #example
 ```
 
 where `<path>` is the full path to the parent folder containing your app.py
-
+Just run this single line — it auto-installs all dependencies and your app goes live!
+for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
 ## Deploying with Domain and SSL (Free SSL via Let's Encrypt)
 
