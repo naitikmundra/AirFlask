@@ -19,12 +19,12 @@ pip install airflask
 
 
 ## Usage
-**Deploying**: Just run this single line — it auto-installs all dependencies and your app goes live on http://ip!
+**Deploying**: Just run this single line — it auto-installs all dependencies and your app goes live!
 
 ```
 sudo airflask deploy <path>
 ```
-
+- if domain is not specified app will be hosted on your public ip address use `--private` if you have a shared public ip address.
 - where `<path>` is the full path to the parent folder containing your app.py
 - for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
