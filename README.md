@@ -15,16 +15,18 @@ pip install airflask
 - 🚀 One line production deployment for flask apps. 
 - 🔧 Installs all dependencies, and manages everything. 
 - ⚡ Powered by a nginx + gunicorn server.
+-    Tweaks and optimizes hosting according to your server specs and web app needs!
 
 
 
 ## Usage
-**Deploying**: Just run this single line — it auto-installs all dependencies and your app goes live!
+**Deploying**: A single line that manages everything and your app goes live with no hassle!
 
 ```
 sudo airflask deploy <path>
 ```
 - where `<path>` is the full path to the parent folder containing your app.py
+- the hosting will be optimized acc. to your server specs and your app size.
 - App will be hosted on localhost, your private and public ip address (if static and unshared).
 - for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
