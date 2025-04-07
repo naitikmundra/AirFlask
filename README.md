@@ -25,6 +25,7 @@ pip install airflask
 sudo airflask deploy <path>
 ```
 - >where `<path>` is the full path to the parent folder containing your app.py
+- >Be sure to rename your main flask file to `app.py`
 - >App will be hosted on localhost, your private and public ip address (if static and unshared).
 - >for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
@@ -39,7 +40,6 @@ sudo airflask deploy <path> --domain <example.com> --ssl --noredirect
 ```
 
 ## Note
-- Be sure to rename your main flask file to `app.py`
 - Make sure your domain points to your ip address for functionality.
 - `--ssl` will not work without a domain specified.
 - by default if `--ssl` is specified all http requests will be redirected to https unless `--noredirect` is used.
