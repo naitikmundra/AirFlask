@@ -28,8 +28,24 @@ sudo airflask deploy <path>
 - >App will be hosted on localhost, your private and public ip address (if static and unshared).
 - >for eg. `sudo airflask deploy /home/naitik/flaskecomapp/`
 
-[Domain and SSL Setup](/docs/domain.md)
+## Deploying with Domain and SSL (Free SSL via Let's Encrypt)
+
+```
+sudo airflask deploy <path> --domain <example.com>
+```
+
+```
+sudo airflask deploy <path> --domain <example.com> --ssl --noredirect
+```
+
+## Note
+- Be sure to rename your main flask file to `app.py`
+- Make sure your domain points to your ip address for functionality.
+- `--ssl` will not work without a domain specified.
+- by default if `--ssl` is specified all http requests will be redirected to https unless `--noredirect` is used.
+
 [Specify App Type](/docs/apptype.md)
+
 [Specify App Power](/docs/apppower.md)
 
 
