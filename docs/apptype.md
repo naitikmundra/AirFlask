@@ -2,7 +2,7 @@
 It is optional yet important to know which kind of web app you are trying to deploy for efficient hosting.
 
 ```
-sudo airflask deploy <path> --domain <example.com> --type <app_type>
+sudo airflask deploy <path> --domain example.com --type <app_type>
 ```
 App type can be:
 - `chatapp ` : web apps which use websockets (*other app types may cause web socket functionality to not work properly)
