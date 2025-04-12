@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="airflask",  
-    version="0.7.0",
+    version="0.9.3",
     author="Naitik Mundra",
     author_email="naitikmundra18@gmail.com",
     license="MIT",
@@ -16,6 +16,7 @@ setup(
     install_requires=[
         "flask",
         "click",
+        "psutil",
     ],
     entry_points={
         "console_scripts": [

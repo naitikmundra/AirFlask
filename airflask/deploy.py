@@ -3,10 +3,55 @@ import subprocess
 import getpass  
 import re
 import multiprocessing
+import psutil
+import time
+import socket
 
-def optimal_workers():
+def optimal_host(venv_path, app_path, power):
+    print("Running tests to identify hosting requirements")
     cores = multiprocessing.cpu_count()
-    return 2 * cores + 1
+    workers = ( 2 * cores + 1)
+    def get_ram_stats():
+        total_gb = psutil.virtual_memory().total / (1024 ** 3)
+        available_gb = psutil.virtual_memory().available / (1024 ** 3)
+        return total_gb, available_gb
+
+
+    total_ram, available_before = get_ram_stats()
+    print(f"Available RAM: {available_before:.2f} GB")
+
+    process = subprocess.Popen(
+        [f"{venv_path}/bin/gunicorn", "gunicorn", "wsgi:app", "--workers", "1"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        cwd=app_path
+    )
+
+    time.sleep(3)
+
+    # Gunicorn RAM usage
+    gunicorn_ram = get_gunicorn_ram_usage_mb()
+    available_after = psutil.virtual_memory().available / (1024 ** 3)
+
+    print(f"Available RAM (post): {available_after:.2f} GB")
+    print(f"Gunicorn RAM usage: {abs((available_after) - (available_before)):.2f} MB")
+    process.terminate()
+    process.wait()
+    if gunicorn_ram * workers > ((available_after*1024)-250):
+        print("Low ram, reducing workers")
+        workers -= 1
+    workers = str(workers)
+    if power == "high":
+        threads = "16"
+        connections = "4000"
+    elif power == "low":
+        threads = "4"
+        workers = "2"
+    else:
+        threads = "8"
+        connections = "2000"
+
+    return workers, threads, connections 
 def get_private_ip():
     try:
         return socket.gethostbyname(socket.gethostname())
@@ -18,7 +63,7 @@ def get_public_ip():
     except Exception:
         return get_private_ip()
         
-def stop(app_path):
+def stopapp(app_path):
     log_file = os.path.join(app_path, "airflask.log")
     with open(log_file, 'r') as file:
         appname = file.read()
@@ -26,7 +71,7 @@ def stop(app_path):
     
     subprocess.run(["sudo", "systemctl", "stop", "nginx"], stdout=subprocess.DEVNULL)
     
-def restart(app_path):
+def restartapp(app_path):
     log_file = os.path.join(app_path, "airflask.log")
     with open(log_file, 'r') as file:
         appname = file.read()
@@ -34,10 +79,11 @@ def restart(app_path):
     
     subprocess.run(["sudo", "systemctl", "restart", "nginx"], stdout=subprocess.DEVNULL)
 
-def run_deploy(app_path, domain,ssl,noredirect):
+def run_deploy(app_path, domain, apptype, power, ssl, noredirect):
+
     app_file = os.path.join(app_path, "app.py")
 
-    if os.path.isfile(app_file):
+    if not os.path.isfile(app_file):
         print("app.py does not exists at provided path, please rename your main flask file to app.py - Airflask")    
         return 0
     if not domain: 
@@ -75,8 +121,19 @@ def run_deploy(app_path, domain,ssl,noredirect):
         with open(wsgi_path, "w") as f:
             f.write(f"from app import app\n\nif __name__ == '__main__':\n    app.run()")
     username = getpass.getuser()
-    workers = str(optimal_workers())
+    workers, threads, connections  = optimal_host(venv_path, app_path, power)
     print(f"Total workers: {workers}")
+    host_type = {
+        "default": f"--workers {workers}  -k gthread  --threads {threads}",
+        "chatapp": f"--workers {workers}  -k gevent  --worker-connections {connections}",
+        "cpubound": f"--workers {workers}  -k sync "
+    }
+    if not apptype:
+        apptype = "default"
+    if not host_type[apptype]:
+        apptype = "default"
+        print("Invalid app type selected, switching to default")
+    exec_gunicorn = host_type[apptype]
     service_config = f"""[Unit]
     Description=Gunicorn instance to serve {app_name}
     After=network.target
@@ -85,21 +142,20 @@ def run_deploy(app_path, domain,ssl,noredirect):
     User={username}
     Group=www-data
     WorkingDirectory={app_path}
-    ExecStart={venv_path}/bin/gunicorn --workers {workers}  -k gthread  --threads 8 --bind unix:{app_path}/{app_name}.sock wsgi:app
+    ExecStart={venv_path}/bin/gunicorn {exec_gunicorn} --bind unix:{app_path}/{app_name}.sock wsgi:app
 
     [Install]
     WantedBy=multi-user.target
     """
 
-    nginx_conf = "/etc/nginx/nginx.conf"
-    username = "username"  
+    nginx_confmain = "/etc/nginx/nginx.conf"
 
-    with open(nginx_conf, "r") as file:
+    with open(nginx_confmain, "r") as file:
         config = file.read()
 
     updated_config = re.sub(r"user\s+\S+;", f"user {username};", config)
 
-    with open(nginx_conf, "w") as file:
+    with open(nginx_confmain, "w") as file:
         file.write(updated_config)
 
     print(f"Username updated in nginx.conf to {username}")
@@ -107,6 +163,7 @@ def run_deploy(app_path, domain,ssl,noredirect):
         file.write(app_name)
     with open("service_file.tmp", "w") as f:
         f.write(service_config)
+    subprocess.run(["sudo", "rm", "/etc/nginx/sites-enabled/default"])
     subprocess.run(["sudo", "mv", "service_file.tmp", service_file], stdout=subprocess.DEVNULL)
     subprocess.run(["sudo", "systemctl", "daemon-reload"], stdout=subprocess.DEVNULL)
     subprocess.run(["sudo", "systemctl", "start", app_name], stdout=subprocess.DEVNULL)
@@ -136,7 +193,7 @@ def run_deploy(app_path, domain,ssl,noredirect):
 
     subprocess.run(["sudo", "systemctl", "restart", "nginx"], stdout=subprocess.DEVNULL)
 
-    ip_address = get_public_ip()
+    ip_address = get_private_ip()
     if domain  == "_":
         domain = ip_address
     print(f"✅ Deployment completed! App with name '{app_name}' is live at: http://{domain}")

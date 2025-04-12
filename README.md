@@ -37,15 +37,20 @@ sudo airflask deploy <path> --domain <example.com>
 
 ```
 sudo airflask deploy <path> --domain <example.com> --ssl --noredirect
+
 ```
 
-- if `--ssl` is specified all http requests will be redirected to https unless `--noredirect` is used. Also make sure domain points to your ip address.
+## App Type and Power
 
-[Specify App Type (IMPORTANT)](/docs/apptype.md) 
+```
+sudo airflask deploy <path> --apptype <app_type> 
+```
 
-[Specify App Power (OPTIMIZE FOR TRAFFIC)](/docs/apppower.md) 
+```
+sudo airflask deploy <path> --power <high/low/med>
+```
 
-
+More instructions and details at https://github.com/naitikmundra/airflask
 
 
 ## Stop or Restart
