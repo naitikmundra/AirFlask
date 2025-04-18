@@ -30,11 +30,12 @@ def optimal_host(venv_path, app_path, power):
     time.sleep(3)
 
     # Gunicorn RAM usage
-    gunicorn_ram = get_gunicorn_ram_usage_mb()
+    
     available_after = psutil.virtual_memory().available / (1024 ** 3)
 
     print(f"Available RAM (post): {available_after:.2f} GB")
     print(f"Gunicorn RAM usage: {abs((available_after) - (available_before)):.2f} MB")
+    gunicorn_ram = abs((available_after) - (available_before))
     process.terminate()
     process.wait()
     if gunicorn_ram * workers > ((available_after*1024)-250):
@@ -182,6 +183,36 @@ def run_deploy(app_path, domain, apptype, power, ssl, noredirect):
         f.write(nginx_config)
     subprocess.run(["sudo", "mv", "nginx_conf.tmp", nginx_conf], stdout=subprocess.DEVNULL)
     subprocess.run(["sudo", "ln", "-s", nginx_conf, nginx_link], stdout=subprocess.DEVNULL)
+    import json
+
+    # Folder and file path
+    dir_path = "/var/airflask"
+    file_path = os.path.join(dir_path, "airflask.txt")
+
+    # Create the directory if it doesn't exist
+    os.makedirs(dir_path, exist_ok=True)
+
+    # Define a list of apps (the list you want to add or update)
+    new_apps = [
+        [app_name, app_path],
+    ]
+
+    # Check if the file exists and read its content if it does
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            # Load the existing list of apps from the file
+            apps = json.load(file)
+    else:
+        # If the file doesn't exist, start with an empty list
+        apps = []
+
+    # Now add the new apps to the list
+    apps.extend(new_apps)
+
+    # Write the updated list back to the file
+    with open(file_path, "w") as file:
+        # Save the updated list to the file in JSON format
+        json.dump(apps, file)
     if ssl:
         print("Getting an ssl certificate for you")
         subprocess.run(["sudo", "apt", "install", "certbot", "python3-certbot-nginx"], stdout=subprocess.DEVNULL)
@@ -192,7 +223,7 @@ def run_deploy(app_path, domain, apptype, power, ssl, noredirect):
         subprocess.run(["sudo", "bash", "-c", 'echo "0 0,12 * * * certbot renew --quiet && systemctl reload nginx" | crontab -'], stdout=subprocess.DEVNULL)
 
     subprocess.run(["sudo", "systemctl", "restart", "nginx"], stdout=subprocess.DEVNULL)
-
+    print("Please do not remove airflask.log file")
     ip_address = get_private_ip()
     if domain  == "_":
         domain = ip_address
