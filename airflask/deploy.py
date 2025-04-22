@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 import getpass  
 import re
@@ -34,11 +35,11 @@ def optimal_host(venv_path, app_path, power):
     available_after = psutil.virtual_memory().available / (1024 ** 3)
 
     print(f"Available RAM (post): {available_after:.2f} GB")
-    print(f"Gunicorn RAM usage: {abs((available_after) - (available_before)):.2f} MB")
+    print(f"Gunicorn RAM usage: {abs((available_after) - (available_before)):.2f} GB")
     gunicorn_ram = abs((available_after) - (available_before))
     process.terminate()
     process.wait()
-    if gunicorn_ram * workers > ((available_after*1024)-250):
+    if gunicorn_ram*1024 * workers > ((available_after*1024)-250):
         print("Low ram, reducing workers")
         workers -= 1
     workers = str(workers)
@@ -48,6 +49,8 @@ def optimal_host(venv_path, app_path, power):
     elif power == "low":
         threads = "4"
         workers = "2"
+        
+        connections = "1000"
     else:
         threads = "8"
         connections = "2000"
@@ -70,7 +73,6 @@ def stopapp(app_path):
         appname = file.read()
     subprocess.run(["sudo", "systemctl", "stop", appname], stdout=subprocess.DEVNULL)
     
-    subprocess.run(["sudo", "systemctl", "stop", "nginx"], stdout=subprocess.DEVNULL)
     
 def restartapp(app_path):
     log_file = os.path.join(app_path, "airflask.log")
@@ -86,7 +88,7 @@ def run_deploy(app_path, domain, apptype, power, ssl, noredirect):
 
     if not os.path.isfile(app_file):
         print("app.py does not exists at provided path, please rename your main flask file to app.py - Airflask")    
-        return 0
+        sys.exit(1)
     if not domain: 
         ssl = None
         domain = "_"
@@ -164,7 +166,8 @@ def run_deploy(app_path, domain, apptype, power, ssl, noredirect):
         file.write(app_name)
     with open("service_file.tmp", "w") as f:
         f.write(service_config)
-    subprocess.run(["sudo", "rm", "/etc/nginx/sites-enabled/default"])
+    if os.path.exists("/etc/nginx/sites-enabled/default"):
+        subprocess.run(["sudo", "rm", "/etc/nginx/sites-enabled/default"])
     subprocess.run(["sudo", "mv", "service_file.tmp", service_file], stdout=subprocess.DEVNULL)
     subprocess.run(["sudo", "systemctl", "daemon-reload"], stdout=subprocess.DEVNULL)
     subprocess.run(["sudo", "systemctl", "start", app_name], stdout=subprocess.DEVNULL)

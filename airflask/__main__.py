@@ -163,9 +163,7 @@ def get(app_name,delete):
                                 nginx_conf = f"/etc/nginx/sites-available/{app_name}"
                                 nginx_link = f"/etc/nginx/sites-enabled/{app_name}"
                                 venv_path = os.path.join(app_path, "venv")
-                                if ssl and not domain:
-                                    click.echo("Error: SSL enabled but no domain specified. Use --domain to specify one.", err=True)
-                                    sys.exit(1)
+                                
                                 for file in [service_file, nginx_conf, nginx_link,log_file]:
                                     try:
                                         os.remove(file)
