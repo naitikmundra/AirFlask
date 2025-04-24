@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="airflask",  
-    version="0.9.8",
+    version="0.9.9",
     author="Naitik Mundra",
     author_email="naitikmundra18@gmail.com",
     license="MIT",

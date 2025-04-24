@@ -30,7 +30,6 @@ def optimal_host(venv_path, app_path, power):
 
     time.sleep(3)
 
-    # Gunicorn RAM usage
     
     available_after = psutil.virtual_memory().available / (1024 ** 3)
 
@@ -39,9 +38,12 @@ def optimal_host(venv_path, app_path, power):
     gunicorn_ram = abs((available_after) - (available_before))
     process.terminate()
     process.wait()
-    if gunicorn_ram*1024 * workers > ((available_after*1024)-250):
-        print("Low ram, reducing workers")
-        workers -= 1
+    while True:
+        if gunicorn_ram*1024 * workers > ((available_after*1024)-100):
+            print("Low ram, reducing workers")
+            workers -= 1
+        else:
+            break
     workers = str(workers)
     if power == "high":
         threads = "16"
@@ -111,7 +113,7 @@ def run_deploy(app_path, domain, apptype, power, ssl, noredirect):
     subprocess.run(["python3", "-m", "venv", venv_path], stdout=subprocess.DEVNULL)
     
     print("📦 Installing Flask, Gunicorn and other specified packages in requirements.txt...")
-    subprocess.run([f"{venv_path}/bin/pip", "install", "flask", "gunicorn"], stdout=subprocess.DEVNULL, cwd=app_path)
+    subprocess.run([f"{venv_path}/bin/pip", "install", "flask", "gunicorn", "gevent"], stdout=subprocess.DEVNULL, cwd=app_path)
     req_file = os.path.join(app_path, "requirements.txt")
 
     if os.path.exists(req_file):    
@@ -162,12 +164,11 @@ def run_deploy(app_path, domain, apptype, power, ssl, noredirect):
         file.write(updated_config)
 
     print(f"Username updated in nginx.conf to {username}")
-    with open('airflask.log','w') as file:
+    with open(os.path.join(app_path, 'airflask.log'), 'w') as file:
         file.write(app_name)
     with open("service_file.tmp", "w") as f:
         f.write(service_config)
-    if os.path.exists("/etc/nginx/sites-enabled/default"):
-        subprocess.run(["sudo", "rm", "/etc/nginx/sites-enabled/default"])
+
     subprocess.run(["sudo", "mv", "service_file.tmp", service_file], stdout=subprocess.DEVNULL)
     subprocess.run(["sudo", "systemctl", "daemon-reload"], stdout=subprocess.DEVNULL)
     subprocess.run(["sudo", "systemctl", "start", app_name], stdout=subprocess.DEVNULL)
@@ -188,33 +189,25 @@ def run_deploy(app_path, domain, apptype, power, ssl, noredirect):
     subprocess.run(["sudo", "ln", "-s", nginx_conf, nginx_link], stdout=subprocess.DEVNULL)
     import json
 
-    # Folder and file path
     dir_path = "/var/airflask"
     file_path = os.path.join(dir_path, "airflask.txt")
 
-    # Create the directory if it doesn't exist
     os.makedirs(dir_path, exist_ok=True)
 
-    # Define a list of apps (the list you want to add or update)
     new_apps = [
         [app_name, app_path],
     ]
 
-    # Check if the file exists and read its content if it does
     if os.path.exists(file_path):
         with open(file_path, "r") as file:
-            # Load the existing list of apps from the file
             apps = json.load(file)
     else:
-        # If the file doesn't exist, start with an empty list
         apps = []
 
-    # Now add the new apps to the list
-    apps.extend(new_apps)
+    if not new_apps in apps:
+        apps.extend(new_apps)
 
-    # Write the updated list back to the file
     with open(file_path, "w") as file:
-        # Save the updated list to the file in JSON format
         json.dump(apps, file)
     if ssl:
         print("Getting an ssl certificate for you")
