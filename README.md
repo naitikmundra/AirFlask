@@ -60,6 +60,12 @@ sudo airflask stop <path>
 ```
 Restart your app after you make changes.
 
+## Get Apps (Get all apps and manage them with single command)
+```
+sudo airflask get
+sudo airflask get <appname> --delete #can be used to delete/rmv a hosted web app
+```
+
 ## Contact
 - Feel free to email me at  naitikmundra18@gmail.com for any queries or suggestions.
 - Or DM me on instagram: https://instagram.com/naitikmundra
