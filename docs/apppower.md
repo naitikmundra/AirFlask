@@ -17,6 +17,6 @@ Based on the amount of traffic your app recieves you can decide if you want:
 `Note` - In genral worker number will be no. of cpu cores in system multiplied by 2 plus 1. A server with 2 cores will have 5 workers.
 
 # WHAT?
-Gunicorn `workers` are individual Python processes that handle incoming web requests. They are the core components that execute your application code. Gunicorn uses a pre-fork worker model, meaning it creates multiple worker processes from a master process to handle concurrent requests, improving performance and reliability. 
+Gunicorn `workers` are individual Python processes that handle incoming web requests. They are the core components that execute your application code. 
 
 
