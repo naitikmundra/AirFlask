@@ -50,7 +50,7 @@ sudo airflask deploy <path> --apptype <app_type>
 sudo airflask deploy <path> --power <high/low/med>
 ```
 
-More instructions and details at https://github.com/naitikmundra/airflask
+More instructions and details at https://github.com/naitikmundra/airflask](https://github.com/naitikmundra/AirFlask/tree/main/docs
 
 
 ## Stop or Restart
