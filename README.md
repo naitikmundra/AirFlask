@@ -65,8 +65,8 @@ Restart your app after you make changes.
 sudo airflask get
 sudo airflask get <appname> --delete #can be used to delete/rmv a hosted web app
 ```
+
 ## Note 
-> ⚠️ AirFlask is meant for beginner Flask developers who want to quickly deploy on a VPS for testing, demos, or learning purposes.  
 
 New developers often struggle with configuring Gunicorn, Nginx, and SSL.  
 AirFlask automates this process with simple commands — even if you're not familiar with Linux servers.
