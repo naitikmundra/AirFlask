@@ -67,13 +67,11 @@ sudo airflask get <appname> --delete #can be used to delete/rmv a hosted web app
 ```
 ## Note 
 > ⚠️ AirFlask is meant for beginner Flask developers who want to quickly deploy on a VPS for testing, demos, or learning purposes.  
-> It is **not recommended for production use**, and does not replace secure CI/CD pipelines like GitHub Actions, Docker, or Ansible.
 
 New developers often struggle with configuring Gunicorn, Nginx, and SSL.  
 AirFlask automates this process with simple commands — even if you're not familiar with Linux servers.
 
 > AirFlask uses `sudo` internally to automate system-level tasks.  
-> This is safe for personal VPS use, but not ideal for shared or production servers.  
 > In future versions, this may be replaced with more secure alternatives like privilege-checks or Docker scripts.
 
 ## Contact
